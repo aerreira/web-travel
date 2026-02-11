@@ -1,0 +1,1 @@
+- **Anti-Pattern (LCP):** Avoid `loading="lazy"` on the active carousel item or hero image. Use `fetchpriority="high"` instead to improve LCP.
