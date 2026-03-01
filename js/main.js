@@ -13,11 +13,13 @@
 
 
     // Sticky Navbar
+    // Bolt Optimization: Cache navbar selector to avoid repeated DOM lookups on scroll
+    var $navbar = $('.navbar');
     $(window).scroll(function () {
         if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm');
         }
     });
 
@@ -116,14 +118,16 @@
 
     
    // Back to top button
+   // Bolt Optimization: Cache back-to-top selector to avoid repeated DOM lookups on scroll
+   var $backToTop = $('.back-to-top');
    $(window).scroll(function () {
     if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
+        $backToTop.fadeIn('slow');
     } else {
-        $('.back-to-top').fadeOut('slow');
+        $backToTop.fadeOut('slow');
     }
     });
-    $('.back-to-top').click(function () {
+    $backToTop.click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
     }); 
