@@ -12,14 +12,38 @@
     spinner(0);
 
 
+
+    // Throttle function to limit scroll event frequency
+    function throttle(func, delay) {
+        var lastCall = 0;
+        var timeout = null;
+        return function () {
+            var now = Date.now();
+            var args = arguments;
+            var context = this;
+            if (now - lastCall < delay) {
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    lastCall = now;
+                    func.apply(context, args);
+                }, delay - (now - lastCall));
+            } else {
+                lastCall = now;
+                func.apply(context, args);
+            }
+        };
+    }
+
     // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+    var $navbar = $('.navbar');
+    var $window = $(window);
+    $window.scroll(throttle(function () {
+        if ($window.scrollTop() > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm');
         }
-    });
+    }, 50));
 
 
     // International Tour carousel
@@ -116,13 +140,14 @@
 
     
    // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
+   var $backToTop = $('.back-to-top');
+   $window.scroll(throttle(function () {
+    if ($window.scrollTop() > 300) {
+        $backToTop.fadeIn('slow');
     } else {
-        $('.back-to-top').fadeOut('slow');
+        $backToTop.fadeOut('slow');
     }
-    });
+    }, 100));
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
