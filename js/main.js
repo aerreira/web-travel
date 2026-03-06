@@ -1,6 +1,36 @@
 (function ($) {
     "use strict";
 
+    // --- Performance Optimization: Throttle with trailing edge & Cached Selectors ---
+    function throttle(func, wait) {
+        var timeout;
+        var lastRun = 0;
+        return function() {
+            var context = this, args = arguments;
+            var current = Date.now();
+            var remaining = wait - (current - lastRun);
+            if (remaining <= 0) {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+                lastRun = current;
+                func.apply(context, args);
+            } else if (!timeout) {
+                timeout = setTimeout(function() {
+                    lastRun = Date.now();
+                    timeout = null;
+                    func.apply(context, args);
+                }, remaining);
+            }
+        };
+    }
+
+    var $navbar = $('.navbar');
+    var $backToTop = $('.back-to-top');
+    // ---------------------------------------------------------------------------------
+
+
     // Spinner
     var spinner = function () {
         setTimeout(function () {
@@ -10,16 +40,14 @@
         }, 1);
     };
     spinner(0);
-
-
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+    // Sticky Navbar (Optimized with 50ms throttle & cached selector)
+    $(window).scroll(throttle(function () {
+        if ($(window).scrollTop() > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm');
         }
-    });
+    }, 50));
 
 
     // International Tour carousel
@@ -113,17 +141,15 @@
             }
         }
     });
-
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
-    $('.back-to-top').click(function () {
+   // Back to top button (Optimized with 100ms throttle & cached selector)
+   $(window).scroll(throttle(function () {
+        if ($(window).scrollTop() > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }, 100));
+    $backToTop.click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
     }); 
