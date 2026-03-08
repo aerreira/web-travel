@@ -1,0 +1,1 @@
+- Anti-pattern in js/main.js: Un-throttled scroll event handlers without cached jQuery selectors cause continuous DOM traversals and layout trashing on every scroll event.
