@@ -12,14 +12,40 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+    // Utility function: Throttle with trailing edge
+    function throttle(func, limit) {
+        var lastFunc;
+        var lastRan;
+        return function() {
+            var context = this;
+            var args = arguments;
+            if (!lastRan) {
+                func.apply(context, args);
+                lastRan = Date.now();
+            } else {
+                clearTimeout(lastFunc);
+                lastFunc = setTimeout(function() {
+                    if ((Date.now() - lastRan) >= limit) {
+                        func.apply(context, args);
+                        lastRan = Date.now();
+                    }
+                }, limit - (Date.now() - lastRan));
+            }
         }
-    });
+    }
+
+
+    // Sticky Navbar
+    var $window = $(window);
+    var $navbar = $('.navbar');
+
+    $window.scroll(throttle(function () {
+        if ($window.scrollTop() > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
+        } else {
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+    }, 50));
 
 
     // International Tour carousel
@@ -114,19 +140,20 @@
         }
     });
 
-    
+
    // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
+   var $backToTop = $('.back-to-top');
+   $window.scroll(throttle(function () {
+    if ($window.scrollTop() > 300) {
+        $backToTop.fadeIn('slow');
     } else {
-        $('.back-to-top').fadeOut('slow');
+        $backToTop.fadeOut('slow');
     }
-    });
-    $('.back-to-top').click(function () {
+   }, 100));
+
+   $backToTop.click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+   });
 
 })(jQuery);
-
