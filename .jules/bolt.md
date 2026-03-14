@@ -1,0 +1,4 @@
+
+### Performance Pattern: Scroll Throttling
+- When combining high-frequency scroll listeners (e.g., sticky navbar at >45px and back-to-top at >300px), using a single `$(window).on('scroll')` listener with a 50ms throttle (`setTimeout`) and caching jQuery selectors dramatically reduces main-thread blocking compared to querying DOM elements (`$('.navbar')`) on every pixel scroll. Ensure the timeout includes a trailing edge execution to prevent the UI from getting stuck if scrolling stops between throttle windows.
+- Always use inline `style="display: none;"` to prevent FOUC for UI elements hidden initially by JS (like the back-to-top button) to ensure jQuery correctly restores previous display states (like `display: flex`) when calling `fadeIn()`, which would otherwise be overridden by explicit CSS `display: none;` changes.

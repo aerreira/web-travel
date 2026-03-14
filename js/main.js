@@ -12,16 +12,6 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
-
-
     // International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
         autoplay: true,
@@ -113,16 +103,40 @@
             }
         }
     });
+    // Throttled Scroll Handler for Sticky Navbar and Back to top button
+    // ⚡ Bolt: Combines scroll listeners, caches jQuery selectors, and uses 50ms throttle with trailing edge
+    var isScrolling = false;
+    var $navbar = null;
+    var $backToTop = null;
+    var $window = $(window);
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
+    function handleScroll() {
+        var scrollTop = $window.scrollTop();
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
+        } else {
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+
+        isScrolling = false;
     }
+
+    $window.on('scroll', function () {
+        if (!isScrolling) {
+            isScrolling = true;
+            setTimeout(handleScroll, 50);
+        }
     });
+
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
