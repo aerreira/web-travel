@@ -1,6 +1,31 @@
 (function ($) {
     "use strict";
 
+    // Custom throttle function for high-frequency events
+    function throttle(func, delay) {
+        var lastCall = 0;
+        var timeout = null;
+        return function() {
+            var context = this;
+            var args = arguments;
+            var now = new Date().getTime();
+
+            if (now - lastCall < delay) {
+                if (timeout) {
+                    clearTimeout(timeout);
+                }
+                timeout = setTimeout(function() {
+                    lastCall = now;
+                    func.apply(context, args);
+                }, delay);
+            } else {
+                lastCall = now;
+                func.apply(context, args);
+            }
+        };
+    }
+
+
     // Spinner
     var spinner = function () {
         setTimeout(function () {
@@ -10,16 +35,6 @@
         }, 1);
     };
     spinner(0);
-
-
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
 
 
     // International Tour carousel
@@ -113,16 +128,37 @@
             }
         }
     });
+    // Unified scroll listener (throttled) for sticky navbar and back-to-top button
+    var $navbar = null;
+    var $backToTop = null;
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
+    $(window).scroll(throttle(function () {
+        var scrollTop = $(window).scrollTop();
+
+        // Lazy cache selectors
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        // Sticky Navbar logic
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
+        } else {
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        // Back to top logic
+        if (scrollTop > 300) {
+            // Check if it's already visible to avoid unnecessary jQuery animation queues
+            if ($backToTop.css('display') === 'none') {
+                 $backToTop.fadeIn('slow');
+            }
+        } else {
+             if ($backToTop.css('display') !== 'none') {
+                 $backToTop.fadeOut('slow');
+             }
+        }
+    }, 50));
+
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;

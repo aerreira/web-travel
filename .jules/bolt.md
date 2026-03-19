@@ -1,0 +1,2 @@
+## Learned: Animation display property restoration
+When an element's visibility is toggled by JavaScript animations like jQuery's `fadeIn` or `fadeOut`, the element must start with an inline `style="display: none;"` in the HTML rather than just depending on CSS visibility/opacity or classes. If it lacks this, jQuery may incorrectly compute its target `display` property, or fail to hide/show it properly on the first scroll event.
