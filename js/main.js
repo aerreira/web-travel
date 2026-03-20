@@ -10,17 +10,55 @@
         }, 1);
     };
     spinner(0);
+    // Custom throttle function for high-frequency events
+    function throttle(func, limit) {
+        var timeout;
+        var lastRun = 0;
+        return function() {
+            var context = this;
+            var args = arguments;
+            var now = Date.now();
+            if (now - lastRun >= limit) {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+                func.apply(context, args);
+                lastRun = now;
+            } else if (!timeout) {
+                timeout = setTimeout(function() {
+                    func.apply(context, args);
+                    lastRun = Date.now();
+                    timeout = null;
+                }, limit - (now - lastRun));
+            }
+        };
+    }
 
+    // Consolidated scroll handlers with lazy selector caching
+    var $navbar = null;
+    var $backToTop = null;
+    $(window).scroll(throttle(function () {
+        var scrollTop = $(this).scrollTop();
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+        // Sticky Navbar
+        if (scrollTop > 45) {
+            if (!$navbar) $navbar = $('.navbar');
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            if (!$navbar) $navbar = $('.navbar');
+            $navbar.removeClass('sticky-top shadow-sm');
         }
-    });
 
+        // Back to top button
+        if (scrollTop > 300) {
+            if (!$backToTop) $backToTop = $('.back-to-top');
+            $backToTop.fadeIn('slow');
+        } else {
+            if (!$backToTop) $backToTop = $('.back-to-top');
+            $backToTop.fadeOut('slow');
+        }
+    }, 50));
 
     // International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
@@ -113,16 +151,7 @@
             }
         }
     });
-
-    
    // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
