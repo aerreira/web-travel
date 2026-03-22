@@ -1,0 +1,3 @@
+
+- **Scroll Events and DOM Traversals**: Discovered that binding multiple `$(window).scroll()` handlers with immediate DOM queries (e.g. `$('.navbar')`) inside them causes severe performance drops due to layout thrashing. Replaced with a unified throttled scroll handler that lazily caches DOM elements (`$navbar`, `$backToTop`).
+- **FOUC on jQuery animations**: For elements toggled by JS animations like `.back-to-top` (using `fadeIn`/`fadeOut`), it is crucial to use inline `style="display: none;"` to hide them initially to prevent Flash of Unstyled Content (FOUC). This avoids conflicts with existing CSS display rules (like `display: flex;` in `.back-to-top`), as jQuery correctly restores the element's original display property when using `fadeIn`.
