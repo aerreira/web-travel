@@ -11,15 +11,57 @@
     };
     spinner(0);
 
+    // Performance: True Throttle utility with trailing edge
+    function throttle(func, delay) {
+        var lastCall = 0;
+        var timeout = null;
+        return function() {
+            var context = this;
+            var args = arguments;
+            var now = new Date().getTime();
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+            if (now - lastCall >= delay) {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+                lastCall = now;
+                func.apply(context, args);
+            } else if (!timeout) {
+                timeout = setTimeout(function() {
+                    lastCall = new Date().getTime();
+                    timeout = null;
+                    func.apply(context, args);
+                }, delay - (now - lastCall));
+            }
+        };
+    }
+
+    // Consolidated Scroll Handlers with Lazy Selector Caching
+    var $navbar = null;
+    var $backToTop = null;
+
+    $(window).scroll(throttle(function () {
+        var scrollTop = $(this).scrollTop();
+
+        // Lazy cache selectors
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        // Sticky Navbar logic
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm');
         }
-    });
+
+        // Back to top button logic
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }, 50));
 
 
     // International Tour carousel
@@ -113,16 +155,7 @@
             }
         }
     });
-
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
+    // Back to top button
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
