@@ -1,0 +1,3 @@
+# Bolt's Critical Learnings
+
+- **Scroll Performance Optimization**: High-frequency events like `scroll` (and `resize`) in this project lead to DOM layout thrashing and redundant event execution when unthrottled. Consolidating multiple `$(window).scroll` handlers (such as for the sticky navbar and back-to-top button) into a single listener and applying a strict `throttle` (e.g., 50ms) ensures smooth UI updates. Additionally, using lazy caching for jQuery selectors (`$el = $el || $('.class')`) inside the throttled handler guarantees DOM readiness while eliminating repeated DOM traversals on every event frame.
