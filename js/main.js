@@ -12,15 +12,52 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
+    // Throttle utility
+    function throttle(func, wait) {
+        let timeout = null;
+        let lastArgs = null;
+        let context = null;
+        return function(...args) {
+            lastArgs = args;
+            context = this;
+            if (!timeout) {
+                func.apply(context, lastArgs);
+                lastArgs = null;
+                timeout = setTimeout(() => {
+                    timeout = null;
+                    if (lastArgs) {
+                        func.apply(context, lastArgs);
+                        lastArgs = null;
+                    }
+                }, wait);
+            }
+        };
+    }
 
+    // Consolidated Scroll Listener with lazy selector caching
+    var $navbar = null;
+    var $backToTop = null;
+
+    $(window).scroll(throttle(function () {
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        var scrollTop = $(this).scrollTop();
+
+        // Sticky Navbar
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
+        } else {
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        // Back to top button visibility
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }, 50));
 
     // International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
@@ -114,19 +151,11 @@
         }
     });
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
+
+   // Back to top button click handler
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
