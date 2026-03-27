@@ -12,16 +12,6 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
-
-
     // International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
         autoplay: true,
@@ -113,16 +103,61 @@
             }
         }
     });
+    // Throttle utility to limit function execution frequency
+    // Performance improvement: reduces the number of times the scroll event fires
+    function throttle(func, delay) {
+        var timeout = null;
+        var lastExec = 0;
+        return function () {
+            var context = this;
+            var args = arguments;
+            var elapsed = Date.now() - lastExec;
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
+            var exec = function () {
+                lastExec = Date.now();
+                func.apply(context, args);
+            };
+
+            if (!timeout) {
+                if (elapsed >= delay) {
+                    exec();
+                } else {
+                    timeout = setTimeout(function () {
+                        timeout = null;
+                        exec();
+                    }, delay - elapsed);
+                }
+            }
+        };
     }
-    });
+
+    // Consolidated Scroll Listener (Sticky Navbar & Back to top button)
+    // Performance improvement: Caching the jQuery object prevents
+    // re-querying the DOM on every scroll event, which reduces overhead.
+    var $navbar = null;
+    var $backToTop = null;
+
+    $(window).scroll(throttle(function () {
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        var scrollTop = $(this).scrollTop();
+
+        // Sticky Navbar
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
+        } else {
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        // Back to top button
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }, 50));
+
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
