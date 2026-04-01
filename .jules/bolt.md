@@ -1,0 +1,4 @@
+# Diario de Bolt ⚡
+
+- **Arquitectura de Scroll**: Descubrí que la plantilla Travela inicializa múltiples listeners `$(window).scroll()` independientes para diferentes componentes UI (Navbar, Back-to-top). En una arquitectura sin empaquetador, consolidar estos listeners en uno solo con caché perezosa de selectores jQuery (`$navbar = $('.navbar')` dentro del handler) reduce drásticamente las travesías redundantes del DOM.
+- **Patrón de Rendimiento**: Al implementar la aceleración (throttle) para el evento scroll, un *debounce* puro (con `clearTimeout`) introducía un retraso visible (stuttering) en la actualización de la UI durante un desplazamiento continuo. La solución óptima y validada para este proyecto es un **throttle verdadero de 50ms**: disparar inmediatamente en el borde inicial, y omitir la creación de nuevos timeouts si ya existe uno activo.
