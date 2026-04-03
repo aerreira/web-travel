@@ -10,16 +10,41 @@
         }, 1);
     };
     spinner(0);
+    // Unified Scroll Handler with 50ms throttle and lazy selector caching
+    var scrollTimeout = false;
+    var $navbar = null;
+    var $backToTop = null;
 
-
-    // Sticky Navbar
     $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function () {
+                var scrollTop = $(window).scrollTop();
+
+                // Lazy Cache
+                if (!$navbar) $navbar = $('.navbar');
+                if (!$backToTop) $backToTop = $('.back-to-top');
+
+                // Sticky Navbar Logic
+                if (scrollTop > 45) {
+                    $navbar.addClass('sticky-top shadow-sm');
+                } else {
+                    $navbar.removeClass('sticky-top shadow-sm');
+                }
+
+                // Back to top Logic
+                if (scrollTop > 300) {
+                    $backToTop.fadeIn('slow');
+                } else {
+                    $backToTop.fadeOut('slow');
+                }
+
+                scrollTimeout = false;
+            }, 50); // 50ms throttle
         }
     });
+
+    // Back to top button
+
 
 
     // International Tour carousel
@@ -113,20 +138,9 @@
             }
         }
     });
-
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
