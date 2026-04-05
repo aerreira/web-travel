@@ -1,0 +1,3 @@
+## Performance Optimizations
+- **Consolidated Scroll Events**: Scroll-related UI logic (sticky navbar and back-to-top visibility) is now consolidated into a single unified listener with lazy selector caching and a 50ms interval to reduce event binding overhead and eliminate repeated DOM traversals.
+- **FOUC Prevention for JS Animations**: For UI elements toggled by JavaScript animations (e.g., '.back-to-top' using jQuery's fadeIn), using inline `style="display: none;"` rather than CSS class-based `display: none;` prevents Flash of Unstyled Content (FOUC) while ensuring jQuery correctly restores original display states like `display: flex`.
