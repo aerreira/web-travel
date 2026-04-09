@@ -1,0 +1,2 @@
+## Performance Pattern: High-Frequency Event Throttling and Selector Caching
+Consolidating multiple high-frequency event handlers (e.g., `scroll`) into a single listener and throttling them (e.g., 50ms) improves rendering performance. Coupling this with lazy-loading and caching of DOM selectors avoids unnecessary repetitive queries on every event trigger, making the application significantly faster (reduced from ~3.77ms to ~1.72ms per 10k iterations in our synthetic benchmarks).

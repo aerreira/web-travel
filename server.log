@@ -1,0 +1,11 @@
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /lib/lightbox/css/lightbox.min.css HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /lib/owlcarousel/assets/owl.carousel.min.css HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /css/bootstrap.min.css HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /lib/easing/easing.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /lib/waypoints/waypoints.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /lib/lightbox/js/lightbox.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /js/main.js HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:38] "GET /lib/owlcarousel/owl.carousel.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [09/Apr/2026 01:50:39] "GET /lib/lightbox/images/loading.gif HTTP/1.1" 200 -
