@@ -12,12 +12,43 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+    // Unified Scroll Listener with 50ms Throttle
+    // BOLT OPTIMIZATION: Consolidate scroll events and cache jQuery DOM lookups
+    // to prevent repetitive DOM queries on high-frequency events
+    var $window = null;
+    var $navbar = null;
+    var $backToTop = null;
+    var scrollTimeout = null;
+
+    function handleScroll() {
+        if (!$window) {
+            $window = $(window);
+            $navbar = $('.navbar');
+            $backToTop = $('.back-to-top');
+        }
+        var scrollTop = $window.scrollTop();
+
+        // Sticky Navbar
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        // Back to top button
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }
+
+    $(window).scroll(function () {
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function () {
+                scrollTimeout = null;
+                handleScroll();
+            }, 50);
         }
     });
 
@@ -116,13 +147,6 @@
 
     
    // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
