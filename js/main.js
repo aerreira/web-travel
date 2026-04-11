@@ -12,15 +12,53 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
 
+
+    // Consolidated scroll listener with lazy selector caching and 50ms true throttle
+    var scrollTimeout = null;
+    var scrollPending = false;
+    var $navbar = null;
+    var $backToTop = null;
+    var $window = $(window);
+
+    function handleScroll() {
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        var scrollTop = $window.scrollTop();
+
+        // Sticky Navbar
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
+        } else {
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        // Back to top button
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }
+
+    $window.scroll(function () {
+        if (scrollTimeout) {
+            scrollPending = true;
+            return;
+        }
+
+        // Execute immediately on leading edge
+        handleScroll();
+
+        scrollTimeout = setTimeout(function () {
+            scrollTimeout = null;
+            if (scrollPending) {
+                scrollPending = false;
+                handleScroll(); // Execute on trailing edge if events occurred during throttle
+            }
+        }, 50);
+    });
 
     // International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
@@ -116,13 +154,6 @@
 
     
    // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
