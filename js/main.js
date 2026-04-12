@@ -12,16 +12,6 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
-
-
     // International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
         autoplay: true,
@@ -114,19 +104,43 @@
         }
     });
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
+    // Unified Scroll Handler (Sticky Navbar & Back to top)
+    // Optimized: Added 50ms throttle, consolidated handlers, and lazily cached DOM selectors to prevent layout thrashing and redundant traversals.
+    var scrollTimeout = null;
+    var $navbar = null;
+    var $backToTop = null;
+
+    $(window).scroll(function () {
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function () {
+                // Lazy cache selectors
+                if (!$navbar) $navbar = $('.navbar');
+                if (!$backToTop) $backToTop = $('.back-to-top');
+
+                var scrollTop = $(window).scrollTop();
+
+                // Sticky Navbar Logic
+                if (scrollTop > 45) {
+                    $navbar.addClass('sticky-top shadow-sm');
+                } else {
+                    $navbar.removeClass('sticky-top shadow-sm');
+                }
+
+                // Back to top Logic
+                if (scrollTop > 300) {
+                    $backToTop.fadeIn('slow');
+                } else {
+                    $backToTop.fadeOut('slow');
+                }
+
+                scrollTimeout = null;
+            }, 50);
+        }
     });
+
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
