@@ -12,15 +12,6 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
-
 
     // International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
@@ -115,14 +106,60 @@
     });
 
     
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
+    // Unified Throttled Scroll Listener (Sticky Navbar & Back to top button)
+    // Consolidates multiple scroll handlers to reduce event binding overhead.
+    // Uses lazy selector caching to eliminate repeated DOM traversals.
+    // Implements a 50ms true throttle with a trailing edge to capture the final scroll state.
+    var scrollTimeout = null;
+    var $navbar = null;
+    var $backToTop = null;
+    var lastScrollTop = -1;
+    var pendingScroll = false;
+
+    function handleScroll() {
+        var scrollTop = $(window).scrollTop();
+
+        if (scrollTop !== lastScrollTop) {
+            lastScrollTop = scrollTop;
+
+            // Lazy cache selectors to avoid repeated DOM traversals
+            if (!$navbar) $navbar = $('.navbar');
+            if (!$backToTop) $backToTop = $('.back-to-top');
+
+            // Sticky Navbar logic
+            if (scrollTop > 45) {
+                $navbar.addClass('sticky-top shadow-sm');
+            } else {
+                $navbar.removeClass('sticky-top shadow-sm');
+            }
+
+            // Back to top button logic
+            if (scrollTop > 300) {
+                $backToTop.fadeIn('slow');
+            } else {
+                $backToTop.fadeOut('slow');
+            }
+        }
     }
+
+    $(window).scroll(function () {
+        if (scrollTimeout) {
+            pendingScroll = true;
+            return;
+        }
+
+        handleScroll(); // Leading edge execution
+
+        scrollTimeout = setTimeout(function () {
+            scrollTimeout = null;
+            if (pendingScroll) {
+                pendingScroll = false;
+                handleScroll(); // Trailing edge execution
+            }
+        }, 50);
     });
+
+    // Back to top button click handler
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
