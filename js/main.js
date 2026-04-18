@@ -10,14 +10,47 @@
         }, 1);
     };
     spinner(0);
+    // Unified Scroll Listener (Sticky Navbar & Back to top) with true throttle and lazy caching
+    var scrollTimeout = null;
+    var scrollPending = false;
+    var $navbar = null;
+    var $backToTop = null;
 
-
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+    function handleScroll() {
+        var scrollTop = $(window).scrollTop();
+        if (!$navbar) {
+            $navbar = $('.navbar');
+            $backToTop = $('.back-to-top');
+        }
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }
+
+    function processScroll() {
+        handleScroll();
+        scrollTimeout = setTimeout(function () {
+            if (scrollPending) {
+                scrollPending = false;
+                processScroll();
+            } else {
+                scrollTimeout = null;
+            }
+        }, 50);
+    }
+
+    $(window).scroll(function () {
+        if (!scrollTimeout) {
+            processScroll();
+        } else {
+            scrollPending = true;
         }
     });
 
@@ -113,16 +146,7 @@
             }
         }
     });
-
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
+    // Back to top button
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
