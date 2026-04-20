@@ -1,0 +1,4 @@
+# Diario de Bolt ⚡
+
+- **Arquitectura de UI (Eventos de scroll):** La lógica de la UI relacionada con el scroll (navbar pegajoso y visibilidad del botón de "volver arriba") en `js/main.js` estaba dividida en múltiples escuchadores `$(window).scroll()`. Esto crea una sobrecarga de enlazado de eventos innecesaria. La optimización requiere consolidarlos en un único escuchador unificado con un acelerador (throttle) verdadero de 50ms para garantizar las actualizaciones de la interfaz y con caché de selectores perezoso (lazy selector caching) para reducir múltiples búsquedas en el DOM, resolviendo un cuello de botella específico.
+- **Patrón de rendimiento (Throttle vs Debounce):** Al implementar throttles para eventos de alta frecuencia como el scroll, debe ser un "true throttle" (disparando a intervalos regulares y omitiendo nuevos timeouts si hay uno activo) en lugar de un "debounce", e incluir el borde posterior para la captura del estado final.
