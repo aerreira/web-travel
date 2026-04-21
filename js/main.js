@@ -12,14 +12,6 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
 
 
     // International Tour carousel
@@ -114,19 +106,54 @@
         }
     });
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
+
+    // Unified Throttled Scroll Handler
+    var scrollTimeout = null;
+    var scrollTrailingEdge = null;
+    var $navbar = null;
+    var $backToTop = null;
+
+    function handleScroll() {
+        var scrollTop = $(window).scrollTop();
+
+        // Lazy cache selectors
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        // Sticky Navbar logic
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
+        } else {
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        // Back to top logic
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
     }
+
+    $(window).scroll(function () {
+        if (!scrollTimeout) {
+            handleScroll();
+            scrollTimeout = setTimeout(function() {
+                scrollTimeout = null;
+                if (scrollTrailingEdge) {
+                    scrollTrailingEdge = false;
+                    handleScroll();
+                }
+            }, 50);
+        } else {
+            scrollTrailingEdge = true;
+        }
     });
+
+   // Back to top button
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
