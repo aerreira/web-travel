@@ -1,0 +1,1 @@
+- Consolidated multiple scroll-based UI toggles (sticky nav, back-to-top) in main.js into a single listener with a 50ms true throttle and lazy jQuery selector caching to significantly reduce event handling overhead.
