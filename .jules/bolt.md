@@ -1,0 +1,1 @@
+- **Performance Pattern (Unified Scroll Handling)**: Consolidating multiple unthrottled `$(window).scroll()` handlers into a single unified listener with a true 50ms throttle (via `setTimeout` skipping) and lazy DOM selector caching significantly reduces main-thread execution time and repeated DOM traversals without perceptibly impacting UI responsiveness.
