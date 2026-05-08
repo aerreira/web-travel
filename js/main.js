@@ -11,17 +11,6 @@
     };
     spinner(0);
 
-
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
-
-
     // International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
         autoplay: true,
@@ -52,7 +41,6 @@
         }
     });
 
-
     // packages carousel
     $(".packages-carousel").owlCarousel({
         autoplay: true,
@@ -82,7 +70,6 @@
             }
         }
     });
-
 
     // testimonial carousel
     $(".testimonial-carousel").owlCarousel({
@@ -115,13 +102,38 @@
     });
 
     
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
+    // Consolidated Scroll Handlers (Sticky Navbar & Back to Top) with true throttle
+    var $window = $(window);
+    var $navbar = null;
+    var $backToTop = null;
+    var scrollTimeout = null;
+
+    $window.scroll(function () {
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function () {
+                var scrollTop = $window.scrollTop();
+
+                // Lazy cache selectors
+                if (!$navbar) $navbar = $('.navbar');
+                if (!$backToTop) $backToTop = $('.back-to-top');
+
+                // Sticky Navbar Logic
+                if (scrollTop > 45) {
+                    $navbar.addClass('sticky-top shadow-sm');
+                } else {
+                    $navbar.removeClass('sticky-top shadow-sm');
+                }
+
+                // Back to Top Logic
+                if (scrollTop > 300) {
+                    $backToTop.fadeIn('slow');
+                } else {
+                    $backToTop.fadeOut('slow');
+                }
+
+                scrollTimeout = null;
+            }, 50);
+        }
     });
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
