@@ -1,0 +1,2 @@
+# Bolt Journal
+- Patrón de rendimiento crítico: El proyecto originalmente enlazaba múltiples $(window).scroll() listeners, calculando scrollTop y haciendo queries al DOM (ej: $('.navbar')) en el hilo principal sin throttling. Esto saturaba la ejecución. Consolidar la lógica de scroll, usar un throttle real de 50ms con trailing edge, y almacenar en caché selectores (lazy caching), evita cuellos de botella significativos en UI.
