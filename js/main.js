@@ -11,18 +11,47 @@
     };
     spinner(0);
 
+    // --- Unified Throttled Scroll Listener ---
+    var scrollTimeout = null;
+    var $window = $(window);
+    var $navbar = null;
+    var $backToTop = null;
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+    // Lazy caching is used inside to guarantee readiness,
+    // while the overall handler execution is throttled to 50ms.
+    function handleScroll() {
+        var scrollTop = $window.scrollTop();
+
+        // Lazy initialize selectors
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        // Sticky Navbar logic
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        // Back to top logic
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }
+
+    $window.scroll(function () {
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function () {
+                scrollTimeout = null;
+                handleScroll();
+            }, 50);
         }
     });
+    // --- End Unified Throttled Scroll Listener ---
 
-
-    // International Tour carousel
+// International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
         autoplay: true,
         smartSpeed: 1000,
@@ -114,19 +143,10 @@
         }
     });
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
-    $('.back-to-top').click(function () {
+    // Back to top button click
+$('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
