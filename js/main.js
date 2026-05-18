@@ -12,14 +12,7 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
+
 
 
     // International Tour carousel
@@ -115,13 +108,44 @@
     });
 
     
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
+    // Unified Throttled Scroll Listener (Sticky Navbar & Back to Top)
+    var $window = $(window);
+    var $navbar = null;
+    var $backToTop = null;
+    var isScrollThrottled = false;
+    var scrollTrailingTimeout = null;
+
+    function handleScroll() {
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        var scrollTop = $window.scrollTop();
+
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
+        } else {
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
     }
+
+    $window.on('scroll', function () {
+        if (!isScrollThrottled) {
+            handleScroll();
+            isScrollThrottled = true;
+            setTimeout(function () {
+                isScrollThrottled = false;
+            }, 50);
+        }
+        clearTimeout(scrollTrailingTimeout);
+        scrollTrailingTimeout = setTimeout(function () {
+            handleScroll();
+        }, 50);
     });
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
