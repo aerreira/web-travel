@@ -1,0 +1,6 @@
+# Diario de Bolt ⚡ - Aprendizajes Críticos
+
+## Optimización de Listeners de Eventos de Alta Frecuencia (Scroll)
+* **Cuello de botella específico de la arquitectura:** Múltiples eventos `$(window).scroll()` vinculados independientemente (`Sticky Navbar` y `Back to top`), cada uno ejecutando consultas al DOM y lógica en cada milisegundo de desplazamiento. Al inyectar un `logicExecutionCounter`, medí 200 ejecuciones de lógica para solo 100 eventos de desplazamiento simulados, lo que causa thrashing y bloquea el hilo principal.
+* **Aprendizaje:** La consolidación de todos los manejadores de eventos de scroll en una única función y la aplicación de un *verdadero acelerador (throttle)* de 50ms usando `setTimeout` (saltando los nuevos eventos si ya existe un timeout activo, no haciendo debounce) redujo drásticamente el número de ejecuciones lógicas de 200 a 1 por ciclo rápido de scroll.
+* **Patrón de rendimiento:** Además del throttling, el almacenamiento en caché de la variable `$window` fuera del manejador, y el almacenamiento en caché perezoso (lazy caching) de selectores pesados (e.g., `if (!$navbar) $navbar = $('.navbar');`) directamente dentro de la función acelerada evita la traversía DOM redundante y asegura que los elementos estén listos.
