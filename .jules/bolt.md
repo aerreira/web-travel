@@ -1,0 +1,4 @@
+
+- **Scroll Performance Bottlenecks**: High-frequency events like `$(window).scroll()` firing 100+ times during a single scroll can cause severe performance issues when performing DOM lookups and manipulating classes, which this template did multiple times across different handlers.
+- **Unified Throttling**: Consolidating multiple scroll event handlers into a single listener and applying a true `setTimeout` based throttle (50ms) is an effective and robust pattern for mitigating scroll-related bottlenecks in this architecture without relying on external libraries.
+- **Lazy Evaluation**: Lazily caching jQuery selectors inside throttled handlers is preferable to caching them globally at module initialization if there's any chance the DOM isn't fully ready or dynamically changes, as it provides a safe initialization on the first relevant event while preserving long-term performance.
