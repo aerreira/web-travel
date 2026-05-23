@@ -11,13 +11,44 @@
     };
     spinner(0);
 
+    // Unified and Throttled Scroll Handler
+    var $window = $(window);
+    var $navbar = null;
+    var $backToTop = null;
+    var scrollTimeout = null;
+    var trailingScroll = false;
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+    function executeScrollLogic() {
+        if (!$navbar) $navbar = $('.navbar');
+        if (!$backToTop) $backToTop = $('.back-to-top');
+
+        var scrollTop = $window.scrollTop();
+
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }
+
+    $window.scroll(function () {
+        if (!scrollTimeout) {
+            executeScrollLogic();
+            scrollTimeout = setTimeout(function() {
+                scrollTimeout = null;
+                if (trailingScroll) {
+                    trailingScroll = false;
+                    executeScrollLogic();
+                }
+            }, 50);
+        } else {
+            trailingScroll = true;
         }
     });
 
@@ -114,19 +145,10 @@
         }
     });
 
-    
    // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
