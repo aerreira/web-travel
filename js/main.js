@@ -12,13 +12,38 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+    // Consolidated and throttled scroll handler
+    var scrollTimeout = null;
+    var $navbar = null;
+    var $backToTop = null;
+    var $window = $(window);
+
+    $window.scroll(function () {
+        if (scrollTimeout) {
+            return;
         }
+        scrollTimeout = setTimeout(function () {
+            scrollTimeout = null;
+
+            if (!$navbar) $navbar = $('.navbar');
+            if (!$backToTop) $backToTop = $('.back-to-top');
+
+            var scrollTop = $window.scrollTop();
+
+            // Sticky Navbar
+            if (scrollTop > 45) {
+                $navbar.addClass('sticky-top shadow-sm');
+            } else {
+                $navbar.removeClass('sticky-top shadow-sm');
+            }
+
+            // Back to top button
+            if (scrollTop > 300) {
+                $backToTop.fadeIn('slow');
+            } else {
+                $backToTop.fadeOut('slow');
+            }
+        }, 50);
     });
 
 
@@ -115,14 +140,7 @@
     });
 
     
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
+   // Back to top button (scroll logic consolidated above)
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
