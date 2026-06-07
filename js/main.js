@@ -12,12 +12,43 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+    // ⚡ Bolt Performance Optimization:
+    // Consolidated multiple scroll handlers into a single, throttled listener
+    // Lazily cache jQuery selectors to prevent repeated DOM traversals on every scroll tick.
+    var $window = $(window);
+    var $navbar = null;
+    var $backToTop = null;
+    var scrollTimeout = null;
+
+    function handleScroll() {
+        if (!$navbar) {
+            $navbar = $('.navbar');
+            $backToTop = $('.back-to-top');
+        }
+
+        var scrollTop = $window.scrollTop();
+
+        // Sticky Navbar
+        if (scrollTop > 45) {
+            $navbar.addClass('sticky-top shadow-sm');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm');
+        }
+
+        // Back to top button
+        if (scrollTop > 300) {
+            $backToTop.fadeIn('slow');
+        } else {
+            $backToTop.fadeOut('slow');
+        }
+    }
+
+    $window.scroll(function () {
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function () {
+                handleScroll();
+                scrollTimeout = null;
+            }, 50);
         }
     });
 
@@ -114,19 +145,11 @@
         }
     });
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
+
+   // Removed duplicate Back to top scroll handler (consolidated above)
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
