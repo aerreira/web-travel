@@ -12,16 +12,6 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
-    });
-
-
     // International Tour carousel
     $(".InternationalTour-carousel").owlCarousel({
         autoplay: true,
@@ -114,19 +104,49 @@
         }
     });
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
+
+
+    // ⚡ Bolt Performance Optimization:
+    // Consolidated and throttled scroll listener with lazy DOM caching
+    // Reduces DOM query thrashing and event handler frequency.
+    var $window = $(window);
+    var $navbar = null;
+    var $backToTop = null;
+    var scrollThrottleTimeout = null;
+
+    $window.scroll(function () {
+        if (!scrollThrottleTimeout) {
+            scrollThrottleTimeout = setTimeout(function () {
+                // Lazily cache selectors to avoid redundant DOM queries
+                if (!$navbar) {
+                    $navbar = $('.navbar');
+                    $backToTop = $('.back-to-top');
+                }
+
+                var scrollTop = $window.scrollTop();
+
+                // Sticky Navbar logic
+                if (scrollTop > 45) {
+                    $navbar.addClass('sticky-top shadow-sm');
+                } else {
+                    $navbar.removeClass('sticky-top shadow-sm');
+                }
+
+                // Back to top button logic
+                if (scrollTop > 300) {
+                    $backToTop.fadeIn('slow');
+                } else {
+                    $backToTop.fadeOut('slow');
+                }
+
+                scrollThrottleTimeout = null;
+            }, 50); // 50ms true throttle
+        }
     });
+
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
