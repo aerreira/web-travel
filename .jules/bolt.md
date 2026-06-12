@@ -1,0 +1,4 @@
+# Diario de Rendimiento de Bolt ⚡
+
+- **Cuello de botella específico**: En esta plantilla HTML, encontramos múltiples manejadores del evento `$(window).scroll()` (uno para el "Sticky Navbar" y otro para el botón "Back to top"). Esto causa la creación de múltiples objetos jQuery `$(this)` u `$(window)` por cada pixel desplazado. Además, los manejadores no están limitados (throttled).
+- **Lección crítica**: Unificar los manejadores de eventos scroll mejora significativamente el rendimiento. Para eventos de alta frecuencia como el scroll, implementar un verdadero "throttle" de 50ms (saltando eventos si hay un timeout activo y asegurando que se capture el estado final - "trailing edge") reduce drásticamente las ejecuciones y los layouts sin sacrificar la respuesta visual. Adicionalmente, el almacenamiento en caché de los objetos jQuery `$(window)` fuera del listener y de los selectores DOM `$('.navbar')` de manera perezosa, reduce aún más el overhead.
