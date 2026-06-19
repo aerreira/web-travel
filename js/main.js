@@ -12,12 +12,33 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+    // Sticky Navbar & Back to top button
+    // ⚡ Bolt: Consolidate scroll handlers and throttle them to 50ms to reduce synchronous execution and DOM queries
+    var scrollTimeout;
+    var $window = $(window);
+    var $navbar;
+    var $backToTop;
+
+    $window.scroll(function () {
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function () {
+                $navbar = $navbar || $('.navbar');
+                $backToTop = $backToTop || $('.back-to-top');
+
+                if ($window.scrollTop() > 45) {
+                    $navbar.addClass('sticky-top shadow-sm');
+                } else {
+                    $navbar.removeClass('sticky-top shadow-sm');
+                }
+
+                if ($window.scrollTop() > 300) {
+                    $backToTop.fadeIn('slow');
+                } else {
+                    $backToTop.fadeOut('slow');
+                }
+
+                scrollTimeout = null;
+            }, 50);
         }
     });
 
@@ -114,19 +135,11 @@
         }
     });
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
+
+   // Back to top button scroll handler consolidated into Sticky Navbar by ⚡ Bolt
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
