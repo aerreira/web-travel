@@ -1,0 +1,2 @@
+## Learnings
+- **Performance Impact**: Consolidating multiple `$(window).scroll` event handlers into a single unified listener significantly reduces event binding overhead. Implementing a 50ms true throttle via `setTimeout` (skipping active timeouts and executing at the trailing edge) limits logic execution frequency drastically (e.g., from 100 times to 1 during rapid scroll bursts) without hurting visual UX. Combined with lazy caching (`var $navbar = $('.navbar');` outside the loop, assigned once), it minimizes redundant DOM querying during scroll execution.
