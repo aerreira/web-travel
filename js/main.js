@@ -12,12 +12,34 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+    // Cached selectors for scroll events
+    var $window = $(window);
+    var $navbar = $('.navbar');
+    var $backToTop = $('.back-to-top');
+    var scrollTimeout = null;
+
+    // Sticky Navbar & Back to top button with 50ms throttle
+    $window.scroll(function () {
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function() {
+                var scrollTop = $window.scrollTop();
+
+                // Sticky Navbar
+                if (scrollTop > 45) {
+                    $navbar.addClass('sticky-top shadow-sm');
+                } else {
+                    $navbar.removeClass('sticky-top shadow-sm');
+                }
+
+                // Back to top button
+                if (scrollTop > 300) {
+                    $backToTop.fadeIn('slow');
+                } else {
+                    $backToTop.fadeOut('slow');
+                }
+
+                scrollTimeout = null;
+            }, 50);
         }
     });
 
@@ -114,19 +136,11 @@
         }
     });
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
+
+    // Back to top button click handler
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
