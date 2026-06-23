@@ -12,12 +12,31 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+    // Unified Throttled Scroll Listener (Sticky Navbar & Back to top)
+    var $window = $(window);
+    var scrollTimeout = null;
+
+    $window.scroll(function () {
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function () {
+                var scrollTop = $window.scrollTop();
+
+                // Sticky Navbar Logic
+                if (scrollTop > 45) {
+                    $('.navbar').addClass('sticky-top shadow-sm');
+                } else {
+                    $('.navbar').removeClass('sticky-top shadow-sm');
+                }
+
+                // Back to top button Logic
+                if (scrollTop > 300) {
+                    $('.back-to-top').fadeIn('slow');
+                } else {
+                    $('.back-to-top').fadeOut('slow');
+                }
+
+                scrollTimeout = null;
+            }, 50);
         }
     });
 
@@ -114,19 +133,11 @@
         }
     });
 
-    
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
-    }
-    });
+
+   // Back to top button (Scroll logic unified above)
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;
-    }); 
+    });
 
 })(jQuery);
-
