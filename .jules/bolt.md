@@ -1,0 +1,3 @@
+## Aprendizajes Críticos de Rendimiento
+
+- **Anti-patrón de Rendimiento Frontend (jQuery Scroll):** Se encontraron múltiples manejadores `$(window).scroll()` no agrupados en `js/main.js` que no utilizaban throttling ni caching de elementos del DOM. En navegadores, el evento scroll puede dispararse docenas de veces por segundo, y recalcular layout (ej. modificando clases o animando) en cada tick causa *layout thrashing* y un renderizado lento, especialmente en dispositivos móviles. Agrupar y aplicar un "true throttle" de 50ms mejora drásticamente el rendimiento de JS sin sacrificar la respuesta visual.
