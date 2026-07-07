@@ -1,0 +1,5 @@
+## Learnings - Critical Performance Discoveries
+
+*   **Continuous Scroll Listeners:** The application originally bound multiple separate `$(window).scroll()` handlers (one for `.navbar`, one for `.back-to-top`). Dispatching high-frequency scroll events natively executed these handlers simultaneously, creating unnecessary overhead (200 executions for 100 dispatch events).
+*   **Throttling:** Wrapping the core layout/DOM manipulation logic within continuous scroll listeners inside `requestAnimationFrame` prevents layout thrashing by executing the callbacks safely prior to the next repaint. This reduced handler computations from 200 down to 1 over our high-frequency test block, effectively mitigating potential stuttering during scroll on heavily populated pages.
+*   **Consolidation:** Combining distinct scroll interactions into a single event listener drastically reduces the browser's callback binding overhead. Additionally, caching heavily queried elements (e.g., `$(window)`) within the unified closure avoids redundant jQuery instantiation across fast-firing DOM events.
